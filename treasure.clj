@@ -4,6 +4,7 @@
         (reduce conj [] (line-seq rdr))))
                
 (def input (Reader))
+(print input)
 (def input_Vector [])
 
 (defn get_chars_from_input []
