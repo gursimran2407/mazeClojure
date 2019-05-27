@@ -1,27 +1,37 @@
 (defn Reader []
     "Reads the file from the disk"
     (with-open [rdr (clojure.java.io/reader "map.txt")]
-        (reduce conj [] (line-seq rdr))))
+        (vec (reduce conj [] (line-seq rdr)))))
                
 (def input (Reader))
-(print input)
-(def input_Vector [])
-
+; (print (count input))
+; (print (get input 7))
 (defn get_chars_from_input []
-    
     "Getting characters from input"
-        (doseq [i input]
-        (println (conj input_Vector (into [] (seq i))))))
+    (loop [i 0
+        temp_vec []]
+         (if (< i (count input))
+            (recur (inc i) (conj temp_vec (into [] (seq (get input i))))) 
+                temp_vec
+                )))
+  
+        
+(def input_vec (get_chars_from_input))
 
-        (get_chars_from_input)
-
-(print input_Vector)
+(defn print_input [in]
+    "It prints the input vector"
+    (doseq [i in]
+        (println i)))
+;(print (get input_vec 7))
+(print_input input_vec)
+(println (first (get input_vec 3)))
+(def a (to-array-2d input_vec))
 
 
 (defn create-empty
     "Create an empty rectangular maze."
     [rows cols]
-    (vec (take rows (repeat (vec (take cols (repeat "-")))))))
+    (vec (take rows (repeat (vec (take cols (repeat #{})))))))
 
 (create-empty 4 4)
 
