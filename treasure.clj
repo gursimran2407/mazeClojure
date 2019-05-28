@@ -1,3 +1,5 @@
+;Author: Gursimran Singh
+;Treasure Game Closure
 (use 'clojure.pprint)
 (use 'clojure.string)
 
@@ -21,7 +23,7 @@
 (defn print_input [in]
     "It prints the input vector"
     (doseq [i in]
-        (println i)))
+        (println (join i))))
 ;(print (get input_vec 7))
 ;(print_input input_vec)
 (defn get_element [x y maze]
@@ -78,6 +80,14 @@
 )
 ;(blocked 0 3)
 
+(defn setFlag [x]
+    "Set flag to true "
+    (def flag (atom x))
+    (add-watch flag :watcher
+        (fn [key atom old-state new-state]
+            ))
+    
+)
 
 (defn path_finder [x y maze]
     "Path finder"
@@ -85,13 +95,21 @@
     ; (print_input temp_maze)
     ; (println)
     (if (and (not (outside_maze (dec x) y temp_maze)) (= (get_element (dec x) y temp_maze) "@"))
-    (print_input temp_maze) )
+    (do (println "\nWoo hoo, I found the treasure :-)\n")
+    (print_input temp_maze) 
+    (reset! flag 0)))
     (if (and (not (outside_maze (inc x) y temp_maze)) (= (get_element (inc x) y temp_maze) "@"))
-    (print_input temp_maze))
+    (do (println "\nWoo hoo, I found the treasure :-)\n")
+    (print_input temp_maze) 
+        (reset! flag 0)))
     (if (and (not (outside_maze x (dec y) temp_maze)) (= (get_element x (dec y) temp_maze) "@"))
-    (print_input temp_maze))
+    (do (println "\nWoo hoo, I found the treasure :-)\n")
+    (print_input temp_maze) 
+        (reset! flag 0)))
     (if (and (not (outside_maze x (inc y) temp_maze)) (= (get_element x (inc y) temp_maze) "@"))
-    (print_input temp_maze))
+    (do (println "\nWoo hoo, I found the treasure :-)\n")
+    (print_input temp_maze) 
+        (reset! flag 0)))
 
     (if (and (not (outside_maze (dec x) y temp_maze)) (= (get_element (dec x) y temp_maze) "-"))
         (def temp_maze (path_finder (dec x) y temp_maze)))
@@ -103,30 +121,7 @@
         (def temp_maze (path_finder x (inc y) temp_maze)))
 
     (assoc-in temp_maze [x y] "!" )
-    
-    )
-
-; (defn path_finders
-;       "Find the path"
-;       ([x, y, maze]
-;         (if (outside_maze x y maze)
-;             false
-;             (if (found_goal x y maze)
-;                 true
-;                 (if (blocked x y )
-;                     false
-;                     (def temp_matrix (assoc-in maze [x y] "+" ))
-;                     (if (path_finder (+ x 1) (+ y 1) temp_matrix)
-;                         true)
-;                     (if (path_finder (+ x 1) y temp_matrix)
-;                         true)
-;                     (if (path_finder (- x 1) (- y 1) temp_matrix)
-;                         true)
-;                     (if (path_finder x (+ y 1) temp_matrix)
-;                         true)
-;                     (def temp_matrix (assoc-in maze [x y] "+" ))
-;                     false
-;                 )))))
+)
 
 (defn print_file []
     "Prints the map from the disk"
@@ -134,17 +129,18 @@
 
 (defn -main [& args]
     "The main function"
-    (println "This is my challenge:")
+    (println "This is my challenge:\n")
     (println (print_file))
-    
-   (def input_maze (get_chars_from_input))
+    (setFlag 1)
+    (def input_maze (get_chars_from_input))
 ;(print (get_element 7 11 input_maze))
-    (def solution (path_finder 0 0 input_maze))
-    ; (def n (count input_vec))
-    ; (def m (count (get input_vec 0)))
-    ; (print_input input_maze)
-    ; (format "n: %d and m: %d" n m)
-   
+    (def solution_final (path_finder 0 0 input_maze))
+
+
+    (if (= @flag 1)
+        (do (println "\nUh oh, I could not find the treasure :-(\n")
+        (print_input solution_final))
+        )
     )
    
 
