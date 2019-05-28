@@ -127,20 +127,29 @@
     "Prints the map from the disk"
     (slurp "map.txt"))
 
+(defn map_validation [mapx]
+    "This validate the map s.t each row should have same number of columns"
+        (def count_list (map count mapx))
+        (apply = count_list)    
+    )
+
 (defn -main [& args]
     "The main function"
+    
     (println "This is my challenge:\n")
     (println (print_file))
     (setFlag 1)
     (def input_maze (get_chars_from_input))
-;(print (get_element 7 11 input_maze))
-    (def solution_final (path_finder 0 0 input_maze))
+    
 
-
-    (if (= @flag 1)
-        (do (println "\nUh oh, I could not find the treasure :-(\n")
-        (print_input solution_final))
-        )
+    (if (map_validation input_maze)
+        (do 
+            (def solution_final (path_finder 0 0 input_maze))
+            (if (= @flag 1)
+                (do (println "\nUh oh, I could not find the treasure :-(\n")
+                (print_input solution_final))
+            )   )
+        (println "\nThe Map is not Valid. Each row doesn't have same number of columns"))
     )
    
 
