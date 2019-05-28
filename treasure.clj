@@ -38,12 +38,14 @@
 
 ;(aget maze 7 12)
 
-(defn outside_maze [x y]
+(defn outside_maze [x y maze]
     "Checks if we are outside the maze"
+    (def n (count maze))
+    (def m (count (get maze 0)))
     (cond
-        (> x (dec n)) false
-        (> y (dec m)) false
-        :else true))
+        (> x (dec n)) true
+        (> y (dec m)) true
+        :else false))
 
 ;(outside_maze 0 0)
 
@@ -65,36 +67,66 @@
         true
         false)
 )
+
+(defn rah [x y]
+    "Checks if goal is found or not"
+    (def goal (get_element x y))
+    ;(pprint goal)
+    (if (= (trim (str goal)) "-")
+        true
+        false)
+)
 ;(blocked 0 3)
 
-(defn mark_solution [x y]
-    "This function marks a position as possible path"
-    (def input_vec)
-    (swap! (assoc-in input_vec [x y] "+" ))
+
+(defn path_finder [x y maze]
+    "Path finder"
+    (def temp_maze (assoc-in maze [x y] "+" ))
+    ; (print_input temp_maze)
+    ; (println)
+    (if (and (not (outside_maze (dec x) y temp_maze)) (= (get_element (dec x) y temp_maze) "@"))
+    (print_input temp_maze) )
+    (if (and (not (outside_maze (inc x) y temp_maze)) (= (get_element (inc x) y temp_maze) "@"))
+    (print_input temp_maze))
+    (if (and (not (outside_maze x (dec y) temp_maze)) (= (get_element x (dec y) temp_maze) "@"))
+    (print_input temp_maze))
+    (if (and (not (outside_maze x (inc y) temp_maze)) (= (get_element x (inc y) temp_maze) "@"))
+    (print_input temp_maze))
+
+    (if (and (not (outside_maze (dec x) y temp_maze)) (= (get_element (dec x) y temp_maze) "-"))
+        (def temp_maze (path_finder (dec x) y temp_maze)))
+    (if (and (not (outside_maze (inc x) y temp_maze)) (= (get_element (inc x) y temp_maze) "-"))
+        (def temp_maze (path_finder (inc x) y temp_maze)))
+    (if (and (not (outside_maze x (dec y) temp_maze)) (= (get_element x (dec y) temp_maze) "-"))
+        (def temp_maze (path_finder x (dec y) temp_maze)))
+    (if (and (not (outside_maze x (inc y) temp_maze)) (= (get_element x (inc y) temp_maze) "-"))
+        (def temp_maze (path_finder x (inc y) temp_maze)))
+
+    (assoc-in temp_maze [x y] "!" )
+    
     )
 
-(mark_solution 2 3)
-(defn path_finder
-      "Find the path"
-      ([x, y]
-        (if (outside_maze x y)
-            false
-            (if (found_goal x y)
-                true
-                (if (blocked x y)
-                    false
-                    (mark_solution x y)
-                    (if (path_finder (+ x 1) (+ y 1))
-                        true)
-                    (if (path_finder (+ x 1) y)
-                        true)
-                    (if (path_finder (- x 1) (- y 1))
-                        true)
-                    (if (path_finder x (+ y 1))
-                        true)
-                    (unmark x y)
-                    false
-                )))))
+; (defn path_finders
+;       "Find the path"
+;       ([x, y, maze]
+;         (if (outside_maze x y maze)
+;             false
+;             (if (found_goal x y maze)
+;                 true
+;                 (if (blocked x y )
+;                     false
+;                     (def temp_matrix (assoc-in maze [x y] "+" ))
+;                     (if (path_finder (+ x 1) (+ y 1) temp_matrix)
+;                         true)
+;                     (if (path_finder (+ x 1) y temp_matrix)
+;                         true)
+;                     (if (path_finder (- x 1) (- y 1) temp_matrix)
+;                         true)
+;                     (if (path_finder x (+ y 1) temp_matrix)
+;                         true)
+;                     (def temp_matrix (assoc-in maze [x y] "+" ))
+;                     false
+;                 )))))
 
 (defn print_file []
     "Prints the map from the disk"
@@ -105,11 +137,17 @@
     (println "This is my challenge:")
     (println (print_file))
     
-    (def input_vec (get_chars_from_input))
+   (def input_maze (get_chars_from_input))
+;(print (get_element 7 11 input_maze))
+    (def solution (path_finder 0 0 input_maze))
+    ; (def n (count input_vec))
+    ; (def m (count (get input_vec 0)))
+    ; (print_input input_maze)
+    ; (format "n: %d and m: %d" n m)
+   
     )
-    (def n (count input_vec))
-    (def m (count (get input_vec 0)))
-    (format "n: %d and m: %d" n m)
+   
+
 
 (-main)
 
